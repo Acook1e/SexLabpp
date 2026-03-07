@@ -5,47 +5,48 @@
 namespace Registry
 {
 	Voice::Voice(const YAML::Node& a_node) :
-		name(a_node["Name"].as<std::string>()),
-		displayName(a_node["DisplayName"].as<std::string>(""s)),
-		enabled(true),
-		sex([&]() {
-			auto node = a_node["Actor"]["Sex"];
-			if (!node.IsDefined())
-				return RE::SEXES::kNone;
-			auto str = node.as<std::string>();
-			Util::ToLower(str);
-			return str == "female" ? RE::SEXES::kFemale :
-						 str == "male"	 ? RE::SEXES::kMale :
-															 RE::SEXES::kNone;
-		}()),
-		races([&]() -> decltype(races) {
-			const auto& node = a_node["Actor"]["Race"];
-			if (node.IsScalar()) return { RaceKey{ node.as<std::string>() } };
-			return std::ranges::fold_left(node, decltype(races){}, [](auto acc, auto&& it) {
-				acc.emplace_back(it.as<std::string>());
-				return acc;
-			});
-		}()),
-		pitch([&]() {
-			const auto& node = a_node["Actor"]["Pitch"];
-			if (!node.IsDefined()) return Pitch::Unknown;
-			return magic_enum::enum_cast<Pitch>(node.as<std::string>(), magic_enum::case_insensitive).value_or(Pitch::Unknown);
-		}()),
-		tags([&]() -> decltype(tags) {
-			const auto& node = a_node["Tags"];
-			return { node.IsScalar() ? std::vector{ node.as<std::string>() } : node.as<std::vector<std::string>>() };
-		}()),
-		defaultset(a_node),
-		extrasets([&]() {
-			decltype(extrasets) ret{};
-			ret.emplace_back(a_node);
-			auto extra = a_node["Extra"];
-			if (extra.IsDefined())
-				for (auto&& it : extra) {
-					ret.emplace_back(it);
-				}
-			return ret;
-		}())
+	  name(a_node["Name"].as<std::string>()),
+	  displayName(a_node["DisplayName"].as<std::string>(""s)),
+	  enabled(true),
+	  tags([&]() -> decltype(tags) {
+		  const auto& node = a_node["Tags"];
+		  return { node.IsScalar() ? std::vector{ node.as<std::string>() } : node.as<std::vector<std::string>>() };
+	  }()),
+	  sex([&]() {
+		  auto node = a_node["Actor"]["Sex"];
+		  if (!node.IsDefined())
+			  return RE::SEXES::kNone;
+		  auto str = node.as<std::string>();
+		  Util::ToLower(str);
+		  return str == "female" ? RE::SEXES::kFemale :
+				 str == "male"	 ? RE::SEXES::kMale :
+								   RE::SEXES::kNone;
+	  }()),
+	  races([&]() -> decltype(races) {
+		  const auto& node = a_node["Actor"]["Race"];
+		  if (node.IsScalar()) return { RaceKey{ node.as<std::string>() } };
+		  return std::ranges::fold_left(node, decltype(races){}, [](auto acc, auto&& it) {
+			  acc.emplace_back(it.template as<std::string>());
+			  return acc;
+		  });
+	  }()),
+	  pitch([&]() {
+		  const auto& node = a_node["Actor"]["Pitch"];
+		  if (!node.IsDefined()) return Pitch::Unknown;
+		  return magic_enum::enum_cast<Pitch>(node.as<std::string>(), magic_enum::case_insensitive).value_or(Pitch::Unknown);
+	  }()),
+
+	  defaultset(a_node),
+	  extrasets([&]() {
+		  decltype(extrasets) ret{};
+		  ret.emplace_back(a_node);
+		  auto extra = a_node["Extra"];
+		  if (extra.IsDefined())
+			  for (auto&& it : extra) {
+				  ret.emplace_back(it);
+			  }
+		  return ret;
+	  }())
 	{}
 
 	const VoiceSet& Voice::GetApplicableSet(REX::EnumSet<VoiceAnnotation> a_annotation) const
@@ -132,7 +133,7 @@ namespace Registry
 			enabled = a_node.as<bool>();
 		}
 	}
-	
+
 
 	VoiceSet::VoiceSet(const YAML::Node& a_node)
 	{
@@ -176,7 +177,7 @@ namespace Registry
 	}
 
 	VoiceSet::VoiceSet(bool a_aslegacyextra) :
-		data({ { nullptr, uint8_t(0) }, { nullptr, uint8_t(75) } })
+	  data({ { nullptr, uint8_t(0) }, { nullptr, uint8_t(75) } })
 	{
 		if (a_aslegacyextra) {
 			annotations |= VoiceAnnotation::Submissive;
@@ -232,4 +233,4 @@ namespace Registry
 		return ret;
 	}
 
-}	 // namespace Registry
+}  // namespace Registry

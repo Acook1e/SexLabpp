@@ -6,7 +6,7 @@
 namespace Registry::Statistics
 {
 	ActorStats::ActorStats(RE::Actor* owner) :
-		_stats(StatisticID::Total)
+	  _stats(StatisticID::Total)
 	{
 		const auto base = owner->GetActorBase();
 		if (const auto relations = base ? base->relationships : nullptr) {
@@ -26,7 +26,7 @@ namespace Registry::Statistics
 						s = Sexuality::Bi;
 						break;
 					}
-					continue;	 // Next iteration
+					continue;  // Next iteration
 				case Sexuality::Homo:
 					if (!samesex) {
 						s = Sexuality::Bi;
@@ -41,8 +41,8 @@ namespace Registry::Statistics
 			}
 			if (s != Sexuality::Bi && s != Sexuality::None) {
 				const auto chance = s == Sexuality::Hetero ?
-															Settings::fPercentageHetero + (Settings::fPercentageHomo / 2) :
-															Settings::fPercentageHomo + (Settings::fPercentageHetero / 2);
+									  Settings::fPercentageHetero + (Settings::fPercentageHomo / 2) :
+									  Settings::fPercentageHomo + (Settings::fPercentageHetero / 2);
 				if (chance >= Random::draw<float>(0, 99)) {
 					s = Sexuality::Bi;
 				}
@@ -67,7 +67,7 @@ namespace Registry::Statistics
 	}
 
 	ActorStats::ActorStats(SKSE::SerializationInterface* a_intfc) :
-		_stats(StatisticID::Total), _custom({})
+	  _stats(StatisticID::Total), _custom({})
 	{
 		for (size_t i = 0; i < StatisticID::Total; i++) {
 			a_intfc->ReadRecordData(_stats[i]);
@@ -178,7 +178,7 @@ namespace Registry::Statistics
 	}
 
 	ActorEncounter::EncounterObj::EncounterObj(RE::Actor* obj) :
-		id(obj->GetFormID()), sex(Registry::GetSex(obj)) {}
+	  id(obj->GetFormID()), sex(Registry::GetSex(obj)) {}
 
 	ActorEncounter::EncounterObj::EncounterObj(SKSE::SerializationInterface* a_intfc)
 	{
@@ -195,13 +195,13 @@ namespace Registry::Statistics
 	}
 
 	ActorEncounter::ActorEncounter(RE::Actor* fst, RE::Actor* snd, EncounterType a_type) :
-		npc1(fst), npc2(snd), _lastmet(0), _timesmet(0), _timesaggressor(0), _timesvictim(0)
+	  npc1(fst), npc2(snd), _lastmet(0), _timesmet(0), _timesvictim(0), _timesaggressor(0)
 	{
 		Update(a_type);
 	}
 
 	ActorEncounter::ActorEncounter(SKSE::SerializationInterface* a_intfc) :
-		npc1(a_intfc), npc2(a_intfc)
+	  npc1(a_intfc), npc2(a_intfc)
 	{
 		if (!a_intfc->ResolveFormID(npc1.id, npc1.id) || !a_intfc->ResolveFormID(npc2.id, npc2.id)) {
 			throw std::exception("Unable to update encounter formid");
@@ -226,29 +226,29 @@ namespace Registry::Statistics
 	uint8_t ActorEncounter::GetTimesSubmissive(RE::FormID a_id) const
 	{
 		return a_id == npc1.id ? _timessubmissive :
-					 a_id == npc2.id ? _timesdominant :
-														 0;
+			   a_id == npc2.id ? _timesdominant :
+								 0;
 	}
 
 	uint8_t ActorEncounter::GetTimesDominant(RE::FormID a_id) const
 	{
 		return a_id == npc1.id ? _timesdominant :
-					 a_id == npc2.id ? _timessubmissive :
-														 0;
+			   a_id == npc2.id ? _timessubmissive :
+								 0;
 	}
 
 	uint8_t ActorEncounter::GetTimesVictim(RE::FormID a_id) const
 	{
 		return a_id == npc1.id ? _timesvictim :
-					 a_id == npc2.id ? _timesaggressor :
-														 0;
+			   a_id == npc2.id ? _timesaggressor :
+								 0;
 	}
 
 	uint8_t ActorEncounter::GetTimesAssailant(RE::FormID a_id) const
 	{
 		return a_id == npc1.id ? _timesaggressor :
-					 a_id == npc2.id ? _timesvictim :
-														 0;
+			   a_id == npc2.id ? _timesvictim :
+								 0;
 	}
 
 	void ActorEncounter::Update(EncounterType a_type)
@@ -325,7 +325,7 @@ namespace Registry::Statistics
 	{
 		return std::ranges::find_if(_encounters, [&](const ActorEncounter& enc) {
 			const auto& [a, b] = enc.GetParticipants();
-			return a.id == fst->formID && b.id == snd->formID || b.id == fst->formID && a.id == snd->formID;
+			return (a.id == fst->formID && b.id == snd->formID) || (b.id == fst->formID && a.id == snd->formID);
 		});
 	}
 
@@ -525,4 +525,4 @@ namespace Registry::Statistics
 	}
 
 
-}	 // namespace Registry::Statistics
+}  // namespace Registry::Statistics

@@ -162,7 +162,7 @@ namespace Papyrus::VoiceSlots
 			Registry::Library::GetSingleton()->SetVoiceRace(a_id, races);
 		}
 
-	}	 // namespace BaseVoice
+	}  // namespace BaseVoice
 
 	RE::BSFixedString SelectVoice(RE::StaticFunctionTag*, RE::Actor* a_actor)
 	{
@@ -221,7 +221,7 @@ namespace Papyrus::VoiceSlots
 	{
 		auto saved = Registry::Library::GetSingleton()->GetSavedActors();
 		std::erase_if(saved, [&](RE::Actor* it) {
-			if (it->IsPlayerRef() || a_sndprio && it->formID == a_sndprio->formID)
+			if (it->IsPlayerRef() || (a_sndprio && it->formID == a_sndprio->formID))
 				return true;
 			auto base = it->GetActorBase();
 			return !base || !base->IsUnique();
@@ -244,4 +244,4 @@ namespace Papyrus::VoiceSlots
 		return v ? v->name : "";
 	}
 
-}	 // namespace Papyrus::VoiceSlots
+}  // namespace Papyrus::VoiceSlots

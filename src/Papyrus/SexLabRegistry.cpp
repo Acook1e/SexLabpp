@@ -5,25 +5,25 @@
 
 namespace Papyrus::SexLabRegistry
 {
-#define SCENE(argRet)                                 \
-	const auto lib = Registry::Library::GetSingleton(); \
-	const auto scene = lib->GetSceneById(a_id);         \
-	if (!scene) {                                       \
-		a_vm->TraceStack("Invalid scene id", a_stackID);  \
-		return argRet;                                    \
+#define SCENE(argRet)                                    \
+	const auto lib = Registry::Library::GetSingleton();  \
+	const auto scene = lib->GetSceneById(a_id);          \
+	if (!scene) {                                        \
+		a_vm->TraceStack("Invalid scene id", a_stackID); \
+		return argRet;                                   \
 	}
 
-#define STAGE(argRet)                                \
-	const auto stage = scene->GetStageByID(a_stage);   \
-	if (!stage) {                                      \
+#define STAGE(argRet)                                    \
+	const auto stage = scene->GetStageByID(a_stage);     \
+	if (!stage) {                                        \
 		a_vm->TraceStack("Invalid stage id", a_stackID); \
 		return argRet;                                   \
 	}
 
-#define POSITION(argRet)                                 \
-	if (n < 0 || n >= scene->positions.size()) {           \
-		a_vm->TraceStack("Invalid position idx", a_stackID); \
-		return argRet;                                       \
+#define POSITION(argRet)                                              \
+	if (n < 0 || static_cast<size_t>(n) >= scene->positions.size()) { \
+		a_vm->TraceStack("Invalid position idx", a_stackID);          \
+		return argRet;                                                \
 	}
 
 	int32_t GetRaceID(STATICARGS, RE::Actor* a_actor)
@@ -171,27 +171,27 @@ namespace Papyrus::SexLabRegistry
 		case Registry::Sex::Male:
 			return humanoid ? 0 : 3;
 		case Registry::Sex::Female:
-			return humanoid									 ? 1 :
-						 Settings::bCreatureGender ? 4 :
-																				 3;
+			return humanoid					 ? 1 :
+				   Settings::bCreatureGender ? 4 :
+											   3;
 		case Registry::Sex::Futa:
-			return humanoid									 ? 2 :
-						 Settings::bCreatureGender ? 4 :
-																				 3;
+			return humanoid					 ? 2 :
+				   Settings::bCreatureGender ? 4 :
+											   3;
 		default:
 			return 0;
 		}
 	}
 
 	std::vector<RE::BSFixedString> LookupScenes(STATICARGS,
-		std::vector<RE::Actor*> a_positions, std::string a_tags, RE::Actor* a_submissive, FurniturePreference a_furniturepref, RE::TESObjectREFR* a_center)
+	  std::vector<RE::Actor*> a_positions, std::string a_tags, RE::Actor* a_submissive, FurniturePreference a_furniturepref, RE::TESObjectREFR* a_center)
 	{
 		auto argSubmissive{ a_submissive ? std::vector<RE::Actor*>{ a_submissive } : std::vector<RE::Actor*>{} };
 		return LookupScenesA(a_vm, a_stackID, nullptr, a_positions, a_tags, argSubmissive, a_furniturepref, a_center);
 	}
 
 	std::vector<RE::BSFixedString> LookupScenesA(STATICARGS,
-		std::vector<RE::Actor*> a_positions, std::string a_tags, std::vector<RE::Actor*> a_submissives, FurniturePreference a_furniturepref, RE::TESObjectREFR* a_center)
+	  std::vector<RE::Actor*> a_positions, std::string a_tags, std::vector<RE::Actor*> a_submissives, FurniturePreference a_furniturepref, RE::TESObjectREFR* a_center)
 	{
 		if (a_positions.empty() || std::ranges::find(a_positions, nullptr) != a_positions.end()) {
 			a_vm->TraceStack("Cannot lookup animations without actors", a_stackID);
@@ -237,27 +237,27 @@ namespace Papyrus::SexLabRegistry
 	}
 
 	bool ValidateScene(STATICARGS,
-		RE::BSFixedString a_sceneid, std::vector<RE::Actor*> a_positions, std::string a_tags, RE::Actor* a_submissive)
+	  RE::BSFixedString a_sceneid, std::vector<RE::Actor*> a_positions, std::string a_tags, RE::Actor* a_submissive)
 	{
 		auto argSubmissive{ a_submissive ? std::vector<RE::Actor*>{ a_submissive } : std::vector<RE::Actor*>{} };
 		return ValidateSceneA(a_vm, a_stackID, nullptr, a_sceneid, a_positions, a_tags, argSubmissive);
 	}
 
 	bool ValidateSceneA(STATICARGS,
-		RE::BSFixedString a_sceneid, std::vector<RE::Actor*> a_positions, std::string a_tags, std::vector<RE::Actor*> a_submissives)
+	  RE::BSFixedString a_sceneid, std::vector<RE::Actor*> a_positions, std::string a_tags, std::vector<RE::Actor*> a_submissives)
 	{
 		return !ValidateScenesA(a_vm, a_stackID, nullptr, { a_sceneid }, a_positions, a_tags, a_submissives).empty();
 	}
 
 	std::vector<RE::BSFixedString> ValidateScenes(STATICARGS,
-		std::vector<RE::BSFixedString> a_sceneids, std::vector<RE::Actor*> a_positions, std::string a_tags, RE::Actor* a_submissive)
+	  std::vector<RE::BSFixedString> a_sceneids, std::vector<RE::Actor*> a_positions, std::string a_tags, RE::Actor* a_submissive)
 	{
 		auto argSubmissive{ a_submissive ? std::vector<RE::Actor*>{ a_submissive } : std::vector<RE::Actor*>{} };
 		return ValidateScenesA(a_vm, a_stackID, nullptr, a_sceneids, a_positions, a_tags, argSubmissive);
 	}
 
 	std::vector<RE::BSFixedString> ValidateScenesA(STATICARGS,
-		std::vector<RE::BSFixedString> a_sceneids, std::vector<RE::Actor*> a_positions, std::string a_tags, std::vector<RE::Actor*> a_submissives)
+	  std::vector<RE::BSFixedString> a_sceneids, std::vector<RE::Actor*> a_positions, std::string a_tags, std::vector<RE::Actor*> a_submissives)
 	{
 		if (a_positions.empty()) {
 			a_vm->TraceStack("Cannot validate scenes against an empty position array", a_stackID);
@@ -534,7 +534,7 @@ namespace Papyrus::SexLabRegistry
 		STAGE({});
 		POSITION({});
 		return stage->positions[n].tags;
-	}	
+	}
 
 	std::vector<RE::BSFixedString> GetCommonTags(STATICARGS, std::vector<RE::BSFixedString> a_ids)
 	{
@@ -652,7 +652,7 @@ namespace Papyrus::SexLabRegistry
 	bool IsSimilarPosition(STATICARGS, RE::BSFixedString a_id, int n, int m)
 	{
 		SCENE(false);
-		if (n < 0 || m < 0 || n >= scene->positions.size() || m >= scene->positions.size()) {
+		if (n < 0 || m < 0 || static_cast<size_t>(n) >= scene->positions.size() || static_cast<size_t>(m) >= scene->positions.size()) {
 			a_vm->TraceStack("Invalid position idx", a_stackID);
 			return false;
 		}
@@ -685,13 +685,13 @@ namespace Papyrus::SexLabRegistry
 	{
 		SCENE(0);
 		STAGE(0);
-		return stage->fixedlength/1000.0f;
+		return stage->fixedlength / 1000.0f;
 	}
 
 	std::vector<RE::BSFixedString> GetClimaxStages(STATICARGS, RE::BSFixedString a_id, int32_t n)
 	{
 		SCENE({});
-		if (n >= scene->positions.size()) {
+		if (static_cast<size_t>(n) >= scene->positions.size()) {
 			a_vm->TraceStack("Invalid position idx", a_stackID);
 			return {};
 		}
@@ -709,7 +709,7 @@ namespace Papyrus::SexLabRegistry
 		SCENE({});
 		STAGE({});
 		std::vector<int32_t> ret{};
-		for (int32_t i = 0; i < stage->positions.size(); i++) {
+		for (uint32_t i = 0; i < stage->positions.size(); i++) {
 			if (stage->positions[i].climax) {
 				ret.push_back(i);
 			}
@@ -1051,4 +1051,4 @@ namespace Papyrus::SexLabRegistry
 		return scene->positions[n].annotations;
 	}
 
-}	 // namespace Papyrus::SexLabRegistry
+}  // namespace Papyrus::SexLabRegistry

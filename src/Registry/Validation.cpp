@@ -48,10 +48,12 @@ int32_t Registry::IsValidActorImpl(RE::Actor* a_actor)
 	switch (race) {
 	case RaceKey::Human:
 		{
+			/*
 			if (a_actor->IsChild())
-				return -11;
+			return -11;
 			if (Scale::GetSingleton()->GetScale(a_actor) < Settings::fMinScale)
-				return -11;
+			return -11;
+			*/
 
 			/* below might be interesting to investigate if GetScale() isnt working reliably
 			 The function calculates the height difference between left foot and head,

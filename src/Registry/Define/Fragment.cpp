@@ -1,7 +1,8 @@
 #include "Fragment.h"
 
-#include "Registry/Util/Scale.h"
 #include "Registry/Define/Sex.h"
+#include "Registry/Util/Scale.h"
+
 
 namespace Registry
 {
@@ -68,7 +69,7 @@ namespace Registry
 			value.set(RaceKeyToValue(race));
 			break;
 		}
-		if (a_submissive, a_actor->IsDead() || a_actor->AsActorState()->IsUnconscious() || a_actor->AsActorValueOwner()->GetActorValue(RE::ActorValue::kVariable05) < 0)
+		if (!a_submissive || a_actor->IsDead() || a_actor->AsActorState()->IsUnconscious() || a_actor->AsActorValueOwner()->GetActorValue(RE::ActorValue::kVariable05) < 0)
 			value.set(Unconscious);
 		if (a_submissive) {
 			value.set(Submissive);
@@ -86,7 +87,7 @@ namespace Registry
 	REX::EnumSet<Sex> ActorFragment::GetSex() const
 	{
 		REX::EnumSet<Sex> ret{};
-#define SET_SEX(s)  \
+#define SET_SEX(s)    \
 	if (value.any(s)) \
 		ret.set(Sex::s);
 		SET_SEX(Male);
@@ -139,7 +140,7 @@ namespace Registry
 		if (!IsAbstract()) {
 			return { *this };
 		}
-		constexpr REX::EnumSet<Value> CONFLICT_FREE{ Human }; // , Submissive, Unconscious };
+		constexpr REX::EnumSet<Value> CONFLICT_FREE{ Human };  // , Submissive, Unconscious };
 		const auto defaultFragment = value & CONFLICT_FREE;
 
 		const auto raceKey = GetRace();
@@ -188,7 +189,7 @@ namespace Registry
 			RaceVariant({ RaceKey::Dog, RaceKey::Wolf });
 			break;
 		case RaceKey::BoarAny:
-			RaceVariant({RaceKey::BoarSingle, RaceKey::BoarMounted});
+			RaceVariant({ RaceKey::BoarSingle, RaceKey::BoarMounted });
 			break;
 		default:
 			Add(RaceKeyToValue(GetRace()));
@@ -225,4 +226,4 @@ namespace Registry
 		return fragments;
 	}
 
-}	 // namespace Registry
+}  // namespace Registry

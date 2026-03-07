@@ -1,14 +1,15 @@
 #include "sslCreatureAnimationSlots.h"
 
-#include "Registry/Library.h"
 #include "Registry/Define/RaceKey.h"
+#include "Registry/Library.h"
+
 
 namespace Papyrus::CreatureAnimationSlots
 {
 	std::vector<RE::BSFixedString> GetByRaceKeyTagsImpl(VM* a_vm, StackID a_stackID, RE::TESQuest*,
-		int32_t a_actorcount, 
-		RE::BSFixedString a_racekey, 
-		std::vector<std::string_view> a_tags)
+	  int32_t a_actorcount,
+	  RE::BSFixedString a_racekey,
+	  std::vector<std::string_view> a_tags)
 	{
 		const Registry::RaceKey racekey{ a_racekey };
 		if (!racekey.IsValid()) {
@@ -21,7 +22,7 @@ namespace Papyrus::CreatureAnimationSlots
 		Registry::Library::GetSingleton()->ForEachScene([&](const Registry::Scene* a_scene) {
 			if (!a_scene->IsEnabled() || a_scene->IsPrivate())
 				return false;
-			if (a_actorcount > -1 && a_scene->positions.size() != a_actorcount)
+			if (a_actorcount > -1 && a_scene->positions.size() != static_cast<size_t>(a_actorcount))
 				return false;
 			if (!a_scene->IsCompatibleTags(tagdetails))
 				return false;
@@ -37,9 +38,9 @@ namespace Papyrus::CreatureAnimationSlots
 	}
 
 	std::vector<RE::BSFixedString> GetByCreatureActorsTagsImpl(VM* a_vm, StackID a_stackID, RE::TESQuest*,
-		int32_t a_actorcount, std::vector<RE::Actor*> a_creatures, std::vector<std::string_view> a_tags)
+	  int32_t a_actorcount, std::vector<RE::Actor*> a_creatures, std::vector<std::string_view> a_tags)
 	{
-		if (a_actorcount <= 0 || a_actorcount > Registry::ActorFragment::MAX_ACTOR_COUNT) {
+		if (a_actorcount <= 0 || static_cast<uint32_t>(a_actorcount) > Registry::ActorFragment::MAX_ACTOR_COUNT) {
 			const auto err = std::format("Actorcount should be between 1 and {} but was {}", Registry::ActorFragment::MAX_ACTOR_COUNT, a_actorcount);
 			a_vm->TraceStack(err.c_str(), a_stackID);
 			return {};
@@ -48,7 +49,7 @@ namespace Papyrus::CreatureAnimationSlots
 			a_vm->TraceStack("Array contained none values", a_stackID);
 			return {};
 		}
-		if (a_creatures.size() > a_actorcount) {
+		if (a_creatures.size() > static_cast<size_t>(a_actorcount)) {
 			a_vm->TraceStack("Actor array should be less or equal than actor count but was greater", a_stackID);
 			return {};
 		}
@@ -59,7 +60,7 @@ namespace Papyrus::CreatureAnimationSlots
 		Registry::Library::GetSingleton()->ForEachScene([&](const Registry::Scene* a_scene) {
 			if (!a_scene->IsEnabled() || a_scene->IsPrivate())
 				return false;
-			if (a_scene->positions.size() != a_actorcount)
+			if (a_scene->positions.size() != static_cast<size_t>(a_actorcount))
 				return false;
 			if (!a_scene->IsCompatibleTags(tagdetails))
 				return false;
@@ -97,13 +98,13 @@ namespace Papyrus::CreatureAnimationSlots
 	}
 
 	std::vector<RE::BSFixedString> GetByRaceGendersTagsImpl(VM* a_vm, StackID a_stackID, RE::TESQuest*,
-		int32_t a_actorcount, 
-		RE::BSFixedString a_racekey, 
-		int32_t a_malecrt, 
-		int32_t a_femalecrt, 
-		std::vector<std::string_view> a_tags)
+	  int32_t a_actorcount,
+	  RE::BSFixedString a_racekey,
+	  int32_t a_malecrt,
+	  int32_t a_femalecrt,
+	  std::vector<std::string_view> a_tags)
 	{
-		if (a_actorcount <= 0 || a_actorcount > Registry::ActorFragment::MAX_ACTOR_COUNT) {
+		if (a_actorcount <= 0 || static_cast<uint32_t>(a_actorcount) > Registry::ActorFragment::MAX_ACTOR_COUNT) {
 			const auto err = std::format("Actorcount should be between 1 and {} but was {}", Registry::ActorFragment::MAX_ACTOR_COUNT, a_actorcount);
 			a_vm->TraceStack(err.c_str(), a_stackID);
 			return {};
@@ -123,7 +124,7 @@ namespace Papyrus::CreatureAnimationSlots
 		Registry::Library::GetSingleton()->ForEachScene([&](const Registry::Scene* a_scene) {
 			if (!a_scene->IsEnabled() || a_scene->IsPrivate())
 				return false;
-			if (a_scene->positions.size() != a_actorcount)
+			if (a_scene->positions.size() != static_cast<size_t>(a_actorcount))
 				return false;
 			if (!a_scene->IsCompatibleTags(tagdetails))
 				return false;
@@ -184,4 +185,4 @@ namespace Papyrus::CreatureAnimationSlots
 		return ret;
 	}
 
-} // namespace Papyrus::CreatureAnimationSlots
+}  // namespace Papyrus::CreatureAnimationSlots

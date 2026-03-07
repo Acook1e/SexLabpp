@@ -2,8 +2,8 @@
 
 namespace Util
 {
-  inline void PrintConsole(const std::string& a_str)
-  {
+	inline void PrintConsole(const std::string& a_str)
+	{
 		const auto console = RE::ConsoleLog::GetSingleton();
 		if (a_str.empty())
 			return;
@@ -20,8 +20,8 @@ namespace Util
 			} while (i < a_str.size());
 		}
 	}
-	
-	RE::TESActorBase* GetLeveledActorBase(RE::Actor* a_actor)
+
+	inline RE::TESActorBase* GetLeveledActorBase(RE::Actor* a_actor)
 	{
 		const auto base = a_actor->GetTemplateActorBase();
 		return base ? base : a_actor->GetActorBase();

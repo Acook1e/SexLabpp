@@ -28,14 +28,14 @@ Raycast::RayResult Raycast::CastRay(glm::vec4 start, glm::vec4 end, float traceH
 	auto physicsWorld = ply->parentCell->GetbhkWorld();
 	if (physicsWorld) {
 		typedef bool(__fastcall * RayCastFunType)(
-			RE::PlayerCamera::Unk120 * physics, RE::bhkWorld * world, glm::vec4 & rayStart,
-			glm::vec4 & rayEnd, uint32_t * rayResultInfo, RE::NiAVObject * *hitActor, float traceHullSize);
+		  RE::PlayerCamera::Unk120 * physics, RE::bhkWorld * world, glm::vec4 & rayStart,
+		  glm::vec4 & rayEnd, uint32_t* rayResultInfo, RE::NiAVObject** hitActor, float traceHullSize);
 
 		static auto cameraCaster = REL::Relocation<RayCastFunType>(Offsets::CameraCaster);
 		res.hit = cameraCaster(
-			cam.unk120, physicsWorld,
-			start, end, static_cast<uint32_t*>(res.data), &res.hitObject,
-			traceHullSize);
+		  cam.unk120, physicsWorld,
+		  start, end, static_cast<uint32_t*>(res.data), &res.hitObject,
+		  traceHullSize);
 	}
 
 	if (res.hit) {
@@ -48,7 +48,8 @@ Raycast::RayResult Raycast::CastRay(glm::vec4 start, glm::vec4 end, float traceH
 #endif
 
 
-Raycast::RayResult Raycast::hkpCastRay(const glm::vec4& start, const glm::vec4& end) noexcept {
+Raycast::RayResult Raycast::hkpCastRay(const glm::vec4& start, const glm::vec4& end) noexcept
+{
 	return hkpCastRay(start, end, std::vector<RE::NiAVObject*>{});
 }
 
@@ -86,10 +87,13 @@ Raycast::RayResult Raycast::hkpCastRay(const glm::vec4& start, const glm::vec4& 
 
 	auto physicsWorld = player->parentCell->GetbhkWorld();
 	if (physicsWorld) {
+		/*
 		typedef void (__thiscall RE::bhkWorld::*CastRay)(SkyrimSE::hkpRayCastInfo*) const;
-
+		
 		(physicsWorld->*reinterpret_cast<CastRay>(&RE::bhkWorld::PickObject))(&info);
 		//physicsWorld->CastRay(&info); // <-- use this instead, fix param
+		*/
+		physicsWorld->PickObject(*reinterpret_cast<RE::bhkPickData*>(&info));
 	}
 
 	SkyrimSE::bhkRayHitResult best = {};

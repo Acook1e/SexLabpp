@@ -1,6 +1,7 @@
 #include "sslAnimationSlots.h"
 
 #include "Registry/Library.h"
+#include <cstdint>
 
 namespace Papyrus::AnimationSlots
 {
@@ -20,24 +21,24 @@ namespace Papyrus::AnimationSlots
 			a_vm->TraceStack("Cannot call GetByTagsImpl on a none object", a_stackID);
 			return {};
 		}
-		if (a_actorcount <= 0 || a_actorcount > Registry::ActorFragment::MAX_ACTOR_COUNT) {
+		if (a_actorcount <= 0 || static_cast<uint32_t>(a_actorcount) > Registry::ActorFragment::MAX_ACTOR_COUNT) {
 			const auto err = std::format("Actorcount should be between 1 and {} but was {}", Registry::ActorFragment::MAX_ACTOR_COUNT, a_actorcount);
 			a_vm->TraceStack(err.c_str(), a_stackID);
 			return {};
 		}
 		const auto lib = Registry::Library::GetSingleton();
-    const auto scenes = lib->GetByTags(a_actorcount, a_tags);
+		const auto scenes = lib->GetByTags(a_actorcount, a_tags);
 		return ScenesToString(scenes);
 	}
 
 	std::vector<RE::BSFixedString> GetByTypeImpl(VM* a_vm, StackID a_stackID, RE::TESQuest* a_qst,
-		int32_t a_actorcount, int32_t a_males, int32_t a_females, std::vector<std::string_view> a_tags)
+	  int32_t a_actorcount, int32_t a_males, int32_t a_females, std::vector<std::string_view> a_tags)
 	{
 		if (!a_qst) {
 			a_vm->TraceStack("Cannot call GetByTypeImpl on a none object", a_stackID);
 			return {};
 		}
-		if (a_actorcount <= 0 || a_actorcount > Registry::ActorFragment::MAX_ACTOR_COUNT) {
+		if (a_actorcount <= 0 || static_cast<uint32_t>(a_actorcount) > Registry::ActorFragment::MAX_ACTOR_COUNT) {
 			const auto err = std::format("Actorcount should be between 1 and {} but was {}", Registry::ActorFragment::MAX_ACTOR_COUNT, a_actorcount);
 			a_vm->TraceStack(err.c_str(), a_stackID);
 			return {};
@@ -63,7 +64,7 @@ namespace Papyrus::AnimationSlots
 			a_vm->TraceStack("Cannot find scenes for a none position", a_stackID);
 			return {};
 		}
-    const auto lib = Registry::Library::GetSingleton();
+		const auto lib = Registry::Library::GetSingleton();
 		std::vector<RE::Actor*> vic{};
 		if (std::find(a_tags.begin(), a_tags.end(), "Forced") != a_tags.end()) {
 			vic.push_back(a_positions[0]);
@@ -87,7 +88,7 @@ namespace Papyrus::AnimationSlots
 		std::vector<const Registry::Scene*> ret{};
 		if (a_returnsize > 0)
 			ret.reserve(a_returnsize);
-		auto tags = Registry::TagDetails{a_tags};
+		auto tags = Registry::TagDetails{ a_tags };
 		const auto lib = Registry::Library::GetSingleton();
 		RE::BSFixedString hash = "";
 		lib->ForEachPackage([&](const Registry::AnimPackage* package) {
@@ -118,4 +119,4 @@ namespace Papyrus::AnimationSlots
 		return ids;
 	}
 
-}	 // namespace Papyrus::AnimationSlots
+}  // namespace Papyrus::AnimationSlots

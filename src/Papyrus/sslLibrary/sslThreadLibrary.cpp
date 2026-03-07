@@ -1,13 +1,14 @@
 #include "sslThreadLibrary.h"
 
-#include "Serialize.h"
 #include "Registry/Define/Animation.h"
 #include "Registry/Define/Fragment.h"
 #include "Registry/Define/Furniture.h"
 #include "Registry/Define/RaceKey.h"
 #include "Registry/Library.h"
 #include "Registry/Validation.h"
+#include "Serialize.h"
 #include "Util/World.h"
+
 
 namespace Papyrus::ThreadLibrary
 {
@@ -23,9 +24,15 @@ namespace Papyrus::ThreadLibrary
 		const auto center = a_center->GetPosition();
 		std::vector<RE::TESObjectREFR*> ret{};
 		Util::ForEachObjectInRange(a_center, a_radius, [&](RE::TESObjectREFR* ref) {
-			if (!ref || !ref->GetBaseObject()->Is(RE::FormType::Furniture) && a_radiusZ > 0.0f ? (std::fabs(center.z - ref->GetPosition().z) <= a_radiusZ) : true)
-				if (Registry::FurnitureType::IsBedType(ref))
-					ret.push_back(ref);
+			if (!ref || !ref->GetBaseObject()->Is(RE::FormType::Furniture))
+				return RE::BSContainer::ForEachResult::kContinue;
+
+			if (a_radiusZ > 0.0f && std::fabs(center.z - ref->GetPosition().z) > a_radiusZ)
+				return RE::BSContainer::ForEachResult::kContinue;
+
+			if (Registry::FurnitureType::IsBedType(ref))
+				ret.push_back(ref);
+
 			return RE::BSContainer::ForEachResult::kContinue;
 		});
 		std::sort(ret.begin(), ret.end(), [&](RE::TESObjectREFR* a_refA, RE::TESObjectREFR* a_refB) {
@@ -53,7 +60,7 @@ namespace Papyrus::ThreadLibrary
 	}
 
 	std::vector<RE::Actor*> FindAvailableActors(VM* a_vm, StackID a_stackID, RE::TESQuest*, RE::TESObjectREFR* a_center, float a_radius, LegacySex a_targetsex,
-		RE::Actor* ignore_ref01, RE::Actor* ignore_ref02, RE::Actor* ignore_ref03, RE::Actor* ignore_ref04, RE::BSFixedString a_targetrace)
+	  RE::Actor* ignore_ref01, RE::Actor* ignore_ref02, RE::Actor* ignore_ref03, RE::Actor* ignore_ref04, RE::BSFixedString a_targetrace)
 	{
 		if (!a_center) {
 			a_vm->TraceStack("Cannot find actor from a none reference", a_stackID);
@@ -82,10 +89,10 @@ namespace Papyrus::ThreadLibrary
 		for (auto&& handle : highactors) {
 			const auto& actor = handle.get();
 			if (!actor ||
-					actor.get() == ignore_ref01 ||
-					actor.get() == ignore_ref02 ||
-					actor.get() == ignore_ref03 ||
-					actor.get() == ignore_ref04)
+				actor.get() == ignore_ref01 ||
+				actor.get() == ignore_ref02 ||
+				actor.get() == ignore_ref03 ||
+				actor.get() == ignore_ref04)
 				continue;
 
 			if (!targetrace.IsCompatibleWith(actor.get()))
@@ -101,14 +108,14 @@ namespace Papyrus::ThreadLibrary
 	}
 
 	RE::Actor* FindAvailableActor(VM* a_vm, StackID a_stackID, RE::TESQuest*, RE::TESObjectREFR* a_center, float a_radius, LegacySex a_targetsex,
-		RE::Actor* ignore_ref01, RE::Actor* ignore_ref02, RE::Actor* ignore_ref03, RE::Actor* ignore_ref04, RE::BSFixedString a_targetrace)
+	  RE::Actor* ignore_ref01, RE::Actor* ignore_ref02, RE::Actor* ignore_ref03, RE::Actor* ignore_ref04, RE::BSFixedString a_targetrace)
 	{
 		auto valids = FindAvailableActors(a_vm, a_stackID, nullptr, a_center, a_radius, a_targetsex, ignore_ref01, ignore_ref02, ignore_ref03, ignore_ref04, a_targetrace);
 		return valids.empty() ? nullptr : valids[0];
 	}
 
 	RE::Actor* FindAvailableActorInFaction(VM* a_vm, StackID a_stackID, RE::TESQuest*, RE::TESFaction* a_faction, RE::TESObjectREFR* a_center, float a_radius, LegacySex a_targetsex,
-		RE::Actor* ignore_ref01, RE::Actor* ignore_ref02, RE::Actor* ignore_ref03, RE::Actor* ignore_ref04, bool a_hasfaction, RE::BSFixedString a_targetrace, bool a_samefloor)
+	  RE::Actor* ignore_ref01, RE::Actor* ignore_ref02, RE::Actor* ignore_ref03, RE::Actor* ignore_ref04, bool a_hasfaction, RE::BSFixedString a_targetrace, bool a_samefloor)
 	{
 		if (!a_faction) {
 			a_vm->TraceStack("Cannot find actor in none faction", a_stackID);
@@ -127,8 +134,8 @@ namespace Papyrus::ThreadLibrary
 	}
 
 	RE::Actor* FindAvailableActorWornForm(VM* a_vm, StackID a_stackID, RE::TESQuest*, uint32_t a_slotmask, RE::TESObjectREFR* a_center, float a_radius, LegacySex a_targetsex,
-		RE::Actor* ignore_ref01, RE::Actor* ignore_ref02, RE::Actor* ignore_ref03, RE::Actor* ignore_ref04, bool a_recognizenostrip, bool a_shouldwear, RE::BSFixedString a_targetrace,
-		bool a_samefloor)
+	  RE::Actor* ignore_ref01, RE::Actor* ignore_ref02, RE::Actor* ignore_ref03, RE::Actor* ignore_ref04, bool a_recognizenostrip, bool a_shouldwear, RE::BSFixedString a_targetrace,
+	  bool a_samefloor)
 	{
 		if (a_slotmask == 0) {
 			a_vm->TraceStack("Cannot find actor from worn form without slotmask", a_stackID);
@@ -154,20 +161,20 @@ namespace Papyrus::ThreadLibrary
 	}
 
 	std::vector<RE::Actor*> FindAvailablePartners(VM* a_vm, StackID a_stackID, RE::TESQuest*,
-		std::vector<RE::Actor*> a_positions, int a_total, int a_males, int a_females, float a_radius)
+	  std::vector<RE::Actor*> a_positions, int a_total, int a_males, int a_females, float a_radius)
 	{
-		if (a_positions.size() >= a_total) {
+		if (a_positions.size() >= static_cast<size_t>(a_total)) {
 			return a_positions;
 		}
 		const auto valids = FindAvailableActors(a_vm, a_stackID, nullptr,
-			a_positions.empty() ? RE::PlayerCharacter::GetSingleton() : a_positions[0],
-			a_radius,
-			LegacySex::None,
-			a_positions.size() > 0 ? a_positions[0] : nullptr,
-			a_positions.size() > 1 ? a_positions[1] : nullptr,
-			a_positions.size() > 2 ? a_positions[2] : nullptr,
-			a_positions.size() > 3 ? a_positions[3] : nullptr,
-			"");
+		  a_positions.empty() ? RE::PlayerCharacter::GetSingleton() : a_positions[0],
+		  a_radius,
+		  LegacySex::None,
+		  a_positions.size() > 0 ? a_positions[0] : nullptr,
+		  a_positions.size() > 1 ? a_positions[1] : nullptr,
+		  a_positions.size() > 2 ? a_positions[2] : nullptr,
+		  a_positions.size() > 3 ? a_positions[3] : nullptr,
+		  "");
 
 		if (valids.empty()) {
 			return a_positions;
@@ -185,7 +192,7 @@ namespace Papyrus::ThreadLibrary
 			const auto sex = GetLegacySex(actor);
 			if (targetsex == LegacySex::None || sex == targetsex) {
 				a_positions.push_back(actor);
-				if (a_positions.size() == a_total) {
+				if (a_positions.size() >= static_cast<size_t>(a_total)) {
 					return a_positions;
 				} else {
 					genders[sex]++;
@@ -196,7 +203,7 @@ namespace Papyrus::ThreadLibrary
 	}
 
 	std::vector<RE::Actor*> FindAnimationPartnersImpl(VM* a_vm, StackID a_stackID, RE::TESQuest*,
-		RE::BSFixedString a_sceneid, RE::TESObjectREFR* a_center, float a_radius, std::vector<RE::Actor*> a_includes)
+	  RE::BSFixedString a_sceneid, RE::TESObjectREFR* a_center, float a_radius, std::vector<RE::Actor*> a_includes)
 	{
 		const auto scene = Registry::Library::GetSingleton()->GetSceneById(a_sceneid);
 		if (!scene) {
@@ -205,14 +212,14 @@ namespace Papyrus::ThreadLibrary
 		}
 		std::vector<RE::Actor*> ret{};
 		auto valids = FindAvailableActors(a_vm, a_stackID, nullptr,
-			a_center,
-			a_radius,
-			LegacySex::None,
-			a_includes.size() > 0 ? a_includes[0] : nullptr,
-			a_includes.size() > 1 ? a_includes[1] : nullptr,
-			a_includes.size() > 2 ? a_includes[2] : nullptr,
-			a_includes.size() > 3 ? a_includes[3] : nullptr,
-			"");
+		  a_center,
+		  a_radius,
+		  LegacySex::None,
+		  a_includes.size() > 0 ? a_includes[0] : nullptr,
+		  a_includes.size() > 1 ? a_includes[1] : nullptr,
+		  a_includes.size() > 2 ? a_includes[2] : nullptr,
+		  a_includes.size() > 3 ? a_includes[3] : nullptr,
+		  "");
 
 		for (auto&& position : scene->positions) {
 			RE::Actor* fill = nullptr;
@@ -241,7 +248,7 @@ namespace Papyrus::ThreadLibrary
 	}
 
 	std::vector<RE::Actor*> SortActorsByAnimationImpl(VM* a_vm, StackID a_stackID, RE::TESQuest*,
-		RE::BSFixedString a_sceneid, std::vector<RE::Actor*> a_positions, std::vector<RE::Actor*> a_submissives)
+	  RE::BSFixedString a_sceneid, std::vector<RE::Actor*> a_positions, std::vector<RE::Actor*> a_submissives)
 	{
 		if (a_positions.empty() || std::ranges::find(a_positions, nullptr) != a_positions.end()) {
 			a_vm->TraceStack("Array is empty or contains none", a_stackID);
@@ -360,4 +367,4 @@ namespace Papyrus::ThreadLibrary
 		return ret;
 	}
 
-}	 // namespace Papyrus::ThreadLibrary
+}  // namespace Papyrus::ThreadLibrary

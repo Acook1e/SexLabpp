@@ -1,7 +1,9 @@
 #include "Thread.h"
 
+#include "Registry/Define/Sex.h"
 #include "Registry/Util/RayCast.h"
 #include "Registry/Util/RayCast/ObjectBound.h"
+#include "Registry/Util/Scale.h"
 #include "Thread/Interface/SelectionMenu.h"
 #include "Util/World.h"
 #include <future>
@@ -9,7 +11,7 @@
 namespace Thread
 {
 	Instance::Position::Position(RE::BGSRefAlias* alias, RE::Actor* actor, bool submissive, bool dominant) :
-		alias(alias), data(actor, submissive)
+	  alias(alias), data(actor, submissive)
 	{
 		const auto library = Registry::Library::GetSingleton();
 		voice = library->GetVoice(actor, { "" });
@@ -22,11 +24,62 @@ namespace Thread
 	}
 
 	Instance::Instance(RE::TESQuest* a_linkedQst, const std::vector<RE::Actor*>& a_submissives, const SceneMapping& a_scenes, FurniturePreference a_furniturepref) :
-		linkedQst(a_linkedQst), center(nullptr), scenes({})
+	  linkedQst(a_linkedQst), center(nullptr), scenes({})
 	{
 		const auto centerAct = InitializeReferences(a_submissives);
 		const auto fragments = InitializeScenes(a_scenes, a_furniturepref);
 		auto& priorityScenes = InitializeCenter(centerAct, a_furniturepref);
+
+		// Loli/shota detection based on all participating actors, not just a_submissives
+		uint8_t loli_counts = 0;
+		uint8_t shota_counts = 0;
+		for (auto& pos : positions) {
+			auto* a_actor = pos.data.GetActor();
+			if (!a_actor) {
+				continue;
+			}
+			const auto scale = Registry::Scale::GetSingleton()->GetScale(a_actor);
+			const auto sex = Registry::GetSex(a_actor);
+			const bool isPetite = a_actor->IsChild() || scale < Settings::fMinScale;
+			if (isPetite) {
+				if (sex == Registry::Sex::Male)
+					shota_counts++;
+				else if (sex == Registry::Sex::Female)
+					loli_counts++;
+			}
+		}
+		std::vector<const Registry::Scene*> tmpScenes;
+		Registry::TagDetails loliTag("loli");
+		Registry::TagDetails shotaTag("shota");
+		for (auto&& scene = priorityScenes.begin(); scene != priorityScenes.end();) {
+			if (loli_counts && !(*scene)->IsCompatibleTags(loliTag)) {
+				tmpScenes.push_back(*scene);
+				scene = priorityScenes.erase(scene);
+				continue;
+			}
+			if (shota_counts && !(*scene)->IsCompatibleTags(shotaTag)) {
+				tmpScenes.push_back(*scene);
+				scene = priorityScenes.erase(scene);
+				continue;
+			}
+			if (!loli_counts && (*scene)->IsCompatibleTags(loliTag)) {
+				tmpScenes.push_back(*scene);
+				scene = priorityScenes.erase(scene);
+				continue;
+			}
+			if (!shota_counts && (*scene)->IsCompatibleTags(shotaTag)) {
+				tmpScenes.push_back(*scene);
+				scene = priorityScenes.erase(scene);
+				continue;
+			}
+			scene++;
+		}
+		if (priorityScenes.empty()) {
+			logger::warn("Loli/Shota filter: No compatible scenes found after filtering. Restoring original scene list.");
+			priorityScenes = tmpScenes;
+		} else
+			logger::info("Loli/Shota filter: Scenes after filtering = {}", priorityScenes.size());
+
 		const auto& centerTy = center.offset.type;
 		for (auto&& sceneArr : scenes) {
 			const auto removed = std::erase_if(sceneArr, [&](const auto& scene) {
@@ -323,4 +376,4 @@ namespace Thread
 		return retVal;
 	}
 
-}	 // namespace Thread
+}  // namespace Thread

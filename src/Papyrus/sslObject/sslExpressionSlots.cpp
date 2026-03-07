@@ -143,7 +143,7 @@ namespace Papyrus::ExpressionSlots
 				return std::vector<float>(Registry::Expression::Total);
 			}
 			auto& ret = profile->data[a_female];
-			if (ret.size() <= n) {
+			if (ret.size() <= static_cast<size_t>(n)) {
 				a_vm->TraceStack("Invalid level", a_stackID);
 				return std::vector<float>(Registry::Expression::Total);
 			}
@@ -189,18 +189,18 @@ namespace Papyrus::ExpressionSlots
 			}
 			p->has_edits = true;
 		}
-	}	 // namespace BaseExpression
+	}  // namespace BaseExpression
 
 	std::vector<RE::BSFixedString> GetAllProfileIDs(RE::StaticFunctionTag*)
-  {
+	{
 		std::vector<RE::BSFixedString> ret{};
 		Registry::Library::GetSingleton()->ForEachExpression([&](const Registry::Expression& profile) {
 			ret.push_back(profile.id);
-      return false;
+			return false;
 		});
-    return ret;
+		return ret;
 	}
-  
+
 	std::vector<RE::BSFixedString> GetExpressionsByStatus(VM* a_vm, StackID a_stackID, RE::StaticFunctionTag*, RE::Actor* a_actor, int a_status)
 	{
 		if (!a_actor) {
@@ -249,4 +249,4 @@ namespace Papyrus::ExpressionSlots
 		return ret;
 	}
 
-}	 // namespace Papyrus::ExpressionSlots
+}  // namespace Papyrus::ExpressionSlots

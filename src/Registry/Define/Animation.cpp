@@ -38,11 +38,10 @@ namespace Registry
 	}
 
 	Scene::Scene(std::ifstream& a_stream, std::string_view a_hash, uint8_t a_version) :
-		hash(a_hash), enabled(true)
+	  enabled(true), hash(a_hash)
 	{
-		
 		// initialize start_animation to avoid crash
-		start_animation=nullptr;
+		start_animation = nullptr;
 
 		id.resize(Decode::ID_SIZE);
 		a_stream.read(id.data(), Decode::ID_SIZE);
@@ -99,13 +98,13 @@ namespace Registry
 		std::string startstage(Decode::ID_SIZE, 'X');
 		if (a_version < 4) {
 			a_stream.read(startstage.data(), Decode::ID_SIZE);
- 		}
+		}
 		uint64_t stage_count;
 		Decode::Read(a_stream, stage_count);
 		stages.reserve(stage_count);
 		for (size_t i = 0; i < stage_count; i++) {
 			const auto& stage = stages.emplace_back(
-				std::make_unique<Stage>(a_stream, a_version));
+			  std::make_unique<Stage>(a_stream, a_version));
 
 			tags.AddTag(stage->tags);
 			if (stage->id == startstage) {
@@ -206,11 +205,11 @@ namespace Registry
 	}
 
 	Position::Position(std::ifstream& a_stream, uint8_t a_version) :
-		event(Decode::Read<decltype(event)>(a_stream)),
-		climax(Decode::Read<uint8_t>(a_stream) > 0),
-		offset(Transform(a_stream)),
-		strips(decltype(strips)::enum_type(Decode::Read<uint8_t>(a_stream))),
-		tags({})
+	  event(Decode::Read<decltype(event)>(a_stream)),
+	  climax(Decode::Read<uint8_t>(a_stream) > 0),
+	  offset(Transform(a_stream)),
+	  strips(decltype(strips)::enum_type(Decode::Read<uint8_t>(a_stream))),
+	  tags({})
 	{
 		if (a_version == 3) Decode::Read<int8_t>(a_stream);
 		if (a_version >= 4) {
@@ -319,7 +318,7 @@ namespace Registry
 		auto sex = data.GetSex();
 		REX::EnumSet<PapyrusSex> ret{ PapyrusSex::None };
 		if (data.IsHuman()) {
-#define SET_SEX(s)     \
+#define SET_SEX(s)       \
 	if (sex.all(Sex::s)) \
 		ret.set(PapyrusSex::s);
 			SET_SEX(Male);
@@ -500,7 +499,7 @@ namespace Registry
 			return {};
 
 		const auto N = a_fragments.size();
-		std::vector fragmentGraph(N, std::vector<std::pair<size_t, int32_t>>{});	// fragment[i] = { { positionIdx, score }, ... }
+		std::vector fragmentGraph(N, std::vector<std::pair<size_t, int32_t>>{});  // fragment[i] = { { positionIdx, score }, ... }
 		for (size_t i = 0; i < N; i++) {
 			const auto& fragment = a_fragments[i];
 			for (size_t j = 0; j < N; j++) {
@@ -742,4 +741,4 @@ namespace Registry
 		return ret;
 	}
 
-}	 // namespace Registry
+}  // namespace Registry

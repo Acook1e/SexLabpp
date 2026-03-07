@@ -28,16 +28,16 @@ namespace Registry
 			Table = 1 << 12,
 			TableCounter = 1 << 13,
 
-			Chair = 1 << 14,				// No arm, high back
+			Chair = 1 << 14,		// No arm, high back
 			ChairCommon = 1 << 15,	// Common chair
-			ChairWood = 1 << 16,		// Wooden Chair
-			ChairBar = 1 << 17,			// Bar stool
-			ChairNoble = 1 << 18,		// Noble Chair
-			ChairMisc = 1 << 19,		// Unspecified
+			ChairWood = 1 << 16,	// Wooden Chair
+			ChairBar = 1 << 17,		// Bar stool
+			ChairNoble = 1 << 18,	// Noble Chair
+			ChairMisc = 1 << 19,	// Unspecified
 
-			Bench = 1 << 20,			 // With back
-			BenchNoble = 1 << 21,	 // Noble Bench (no back, with arm)
-			BenchMisc = 1 << 20,	 // No specification on back or arm
+			Bench = 1 << 20,	   // With back
+			BenchNoble = 1 << 21,  // Noble Bench (no back, with arm)
+			BenchMisc = 1 << 20,   // No specification on back or arm
 
 			Throne = 1 << 22,
 			ThroneRiften = 1 << 23,
@@ -49,10 +49,10 @@ namespace Registry
 			All = static_cast<std::underlying_type_t<Value>>(-1)
 		};
 
-	public:
+	  public:
 		constexpr FurnitureType() = default;
 		constexpr FurnitureType(Value a_value) :
-			value(a_value) {}
+		  value(a_value) {}
 		FurnitureType(const RE::BSFixedString& a_value);
 
 		_NODISCARD RE::BSFixedString ToString() const;
@@ -60,7 +60,7 @@ namespace Registry
 		_NODISCARD constexpr bool IsBed() const { return value == Value::BedSingle || value == Value::BedDouble || value == Value::BedRoll; }
 		_NODISCARD constexpr bool IsNone() const { return value == Value::None; }
 
-	public:
+	  public:
 		_NODISCARD static FurnitureType GetBedType(const RE::TESObjectREFR* a_reference);
 		_NODISCARD static bool IsBedType(const RE::TESObjectREFR* a_reference);
 
@@ -70,14 +70,14 @@ namespace Registry
 			return magic_enum::enum_name<a_value>();
 		}
 
-	public:
+	  public:
 		_NODISCARD constexpr bool operator==(const FurnitureType& a_rhs) const { return value == a_rhs.value; }
 		_NODISCARD constexpr bool operator!=(const FurnitureType& a_rhs) const { return value != a_rhs.value; }
 		_NODISCARD constexpr bool operator<(const FurnitureType& a_rhs) const { return value < a_rhs.value; }
 
 		constexpr operator Value() const { return value; }
 
-	public:
+	  public:
 		Value value{ Value::None };
 	};
 
@@ -89,10 +89,10 @@ namespace Registry
 
 	class FurnitureDetails
 	{
-	public:
+	  public:
 		FurnitureDetails(const YAML::Node& a_node);
 		FurnitureDetails(FurnitureType a_type, Coordinate a_coordinate) :
-			data({ { a_type, a_coordinate } }) {}
+		  data({ { a_type, a_coordinate } }) {}
 		~FurnitureDetails() = default;
 
 		std::vector<FurnitureOffset> GetCoordinatesInBound(RE::TESObjectREFR* a_ref, REX::EnumSet<FurnitureType::Value> a_filter) const;
@@ -101,9 +101,9 @@ namespace Registry
 		template <typename T, typename S>
 		bool HasType(T a_container, S a_projection) const
 		{
-			return std::ranges::any_of(data, a_container, [a_projection](auto&& it) {
+			return std::ranges::any_of(data, a_container, [a_projection, this](auto&& it) {
 				FurnitureType type = a_projection(it);
-				return HasType(type);
+				return this->HasType(type);
 			});
 		}
 		bool HasType(FurnitureType a_type) const
@@ -119,8 +119,8 @@ namespace Registry
 			return ret;
 		}
 
-	private:
+	  private:
 		std::vector<FurnitureOffset> data;
 	};
 
-}	 // namespace Registry
+}  // namespace Registry

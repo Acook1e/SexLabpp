@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Registry/Util/Scale.h"
+
 namespace Papyrus::SexLabUtil
 {
 	bool HasKeywordSub(VM* a_vm, StackID a_stackID, RE::StaticFunctionTag*, RE::TESForm* a_form, std::string_view a_substring)
@@ -32,7 +34,7 @@ namespace Papyrus::SexLabUtil
 		size_t w = 0;
 		int m = 0;
 		for (size_t i = 0; i < arr.size(); i++) {
-			if (findHighestValue && arr[i] > m || !findHighestValue && arr[i] < m) {
+			if ((findHighestValue && arr[i] > m) || (!findHighestValue && arr[i] < m)) {
 				w = i;
 				m = arr[i];
 			}
@@ -54,7 +56,7 @@ namespace Papyrus::SexLabUtil
 		size_t w = 0;
 		float m = 0;
 		for (size_t i = 0; i < arr.size(); i++) {
-			if (findHighestValue && arr[i] > m || !findHighestValue && arr[i] < m) {
+			if ((findHighestValue && arr[i] > m) || (!findHighestValue && arr[i] < m)) {
 				w = i;
 				m = arr[i];
 			}
@@ -111,6 +113,14 @@ namespace Papyrus::SexLabUtil
 		return player->IsGodMode();
 	}
 
+	bool IsChild(RE::StaticFunctionTag*, RE::Actor* a_actor)
+	{
+		if (!a_actor)
+			return false;
+
+		return a_actor->IsChild() || Registry::Scale::GetSingleton()->GetScale(a_actor) < Settings::fMinScale;
+	}
+
 	inline bool Register(VM* a_vm)
 	{
 		REGISTERFUNC(HasKeywordSub, "SexLabUtil", true);
@@ -124,8 +134,9 @@ namespace Papyrus::SexLabUtil
 		REGISTERFUNC(GetCurrentGameRealTime, "SexLabUtil", true);
 		REGISTERFUNC(GetTranslation, "SexLabUtil", true);
 		REGISTERFUNC(IsGodModeEnabled, "SexLabUtil", true);
+		REGISTERFUNC(IsChild, "SexLabUtil", true);
 
 		return true;
 	}
 
-}	 // namespace Papyrus::SexLabUtil
+}  // namespace Papyrus::SexLabUtil

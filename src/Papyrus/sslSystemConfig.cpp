@@ -5,7 +5,7 @@
 
 namespace Papyrus::SystemConfig
 {
-	template <class T, size_t ArgC = -1>
+	template <typename T>
 	inline T GetSetting(VM* a_vm, StackID a_stackID, const std::string& a_setting)
 	{
 		auto w = Settings::table.find(a_setting);
@@ -112,7 +112,7 @@ namespace Papyrus::SystemConfig
 		auto s = GetSetting<std::vector<int>*>(a_vm, a_stackID, a_setting);
 		if (!s)
 			return;
-		if (n < 0 || n >= s->size()) {
+		if (n < 0 || static_cast<size_t>(n) >= s->size()) {
 			const auto err = std::format("Index out of range: {}/{}", n, s->size());
 			a_vm->TraceStack(err.c_str(), a_stackID);
 			return;
@@ -126,7 +126,7 @@ namespace Papyrus::SystemConfig
 		auto s = GetSetting<std::vector<float>*>(a_vm, a_stackID, a_setting);
 		if (!s)
 			return;
-		if (n < 0 || n >= s->size()) {
+		if (n < 0 || static_cast<size_t>(n) >= s->size()) {
 			const auto err = std::format("Index out of range: {}/{}", n, s->size());
 			a_vm->TraceStack(err.c_str(), a_stackID);
 			return;
@@ -176,7 +176,7 @@ namespace Papyrus::SystemConfig
 		std::vector<float> values;
 		values.reserve(EnjoymentFactorsList.size());
 		for (float* ptr : EnjoymentFactorsList) {
-				values.push_back(ptr ? *ptr : 0.0f);
+			values.push_back(ptr ? *ptr : 0.0f);
 		}
 		return values;
 	}
@@ -184,7 +184,7 @@ namespace Papyrus::SystemConfig
 	float GetEnjoymentFactor(RE::StaticFunctionTag*, int32_t idx)
 	{
 		if (idx < 0 || static_cast<size_t>(idx) >= EnjoymentFactorsList.size()) {
-			return 0.0f; 
+			return 0.0f;
 		}
 		float* ptr = EnjoymentFactorsList[idx];
 		if (ptr) {
@@ -217,4 +217,4 @@ namespace Papyrus::SystemConfig
 		return ret;
 	}
 
-}	 // namespace Papyrus
+}  // namespace Papyrus

@@ -1,11 +1,34 @@
 #include "Library.h"
 
 #include "Define/RaceKey.h"
+#include "Registry/Util/Scale.h"
 
 namespace Registry
 {
-	std::vector<const Scene*> Library::LookupScenes(const std::vector<RE::Actor*>& a_actors, const std::vector<std::string_view>& a_tags, const std::vector<RE::Actor*>& a_submissives) const
+	std::vector<const Scene*> Library::LookupScenes(const std::vector<RE::Actor*>& a_actors, const std::vector<std::string_view>& row_tags, const std::vector<RE::Actor*>& a_submissives) const
 	{
+		std::vector<std::string_view> a_tags{ row_tags.begin(), row_tags.end() };
+		uint8_t loli_counts = 0;
+		uint8_t shota_counts = 0;
+		for (auto&& a_actor : a_actors) {
+			if (a_actor->IsChild() || Registry::Scale::GetSingleton()->GetScale(a_actor) < Settings::fMinScale) {
+				if (GetSex(a_actor) == Registry::Sex::Male)
+					shota_counts++;
+				else if (GetSex(a_actor) == Registry::Sex::Female)
+					loli_counts++;
+			}
+		}
+		if (loli_counts || shota_counts) {
+			if (loli_counts)
+				a_tags.push_back("loli");
+			else
+				a_tags.push_back("-loli");
+			if (shota_counts)
+				a_tags.push_back("shota");
+			else
+				a_tags.push_back("-shota");
+		}
+
 		const auto tStart = std::chrono::high_resolution_clock::now();
 		ActorFragment::FragmentHash hash;
 #ifndef SKYRIMVR
@@ -71,7 +94,7 @@ namespace Registry
 		for (auto&& [key, scene] : sceneMap) {
 			if (!scene->IsEnabled() || scene->IsPrivate())
 				continue;
-			if (scene->positions.size() != a_positions)
+			if (scene->positions.size() != static_cast<size_t>(a_positions))
 				continue;
 			if (!scene->IsCompatibleTags(tags))
 				continue;
@@ -190,7 +213,7 @@ namespace Registry
 		const auto sex = base ? base->GetSex() : RE::SEXES::kMale;
 		std::vector<const Voice*> ret{};
 		for (auto&& [name, voice] : voices) {
-			if (!voice.enabled || voice.sex != RE::SEXES::kNone && voice.sex != sex)
+			if (!voice.enabled || (voice.sex != RE::SEXES::kNone && voice.sex != sex))
 				continue;
 			if (!voice.HasRace(actRace) || !a_tags.MatchTags(voice.tags))
 				continue;

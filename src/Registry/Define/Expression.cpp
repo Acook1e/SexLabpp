@@ -3,11 +3,11 @@
 namespace Registry
 {
 	Expression::Expression(const YAML::Node& a_src) :
-		id(a_src["id"].as<std::string>("Missing Name")),
-		version(static_cast<uint8_t>(a_src["version"].as<uint32_t>(0))),
-		enabled(a_src["enabled"].as<bool>(true)),
-		tags(a_src["tags"].as<std::vector<std::string>>(std::vector<std::string>{})),
-		scaling(Scaling(a_src["scaling"].as<int32_t>(std::to_underlying(Scaling::Linear))))
+	  id(a_src["id"].as<std::string>("Missing Name")),
+	  version(static_cast<uint8_t>(a_src["version"].as<uint32_t>(0))),
+	  enabled(a_src["enabled"].as<bool>(true)),
+	  tags(a_src["tags"].as<std::vector<std::string>>(std::vector<std::string>{})),
+	  scaling(Scaling(a_src["scaling"].as<int32_t>(std::to_underlying(Scaling::Linear))))
 	{
 		if (!a_src["data"].IsDefined())
 			throw std::runtime_error("Missing data field");
@@ -26,12 +26,12 @@ namespace Registry
 	}
 
 	Expression::Expression(const nlohmann::json& a_src) :
-		id([&]() {
-			if (const auto strings = a_src.find("string"); strings != a_src.end())
-				if (const auto name = strings->find("name"); name != strings->end())
-					return name->get<std::string>();
-			throw std::runtime_error("Missing Name field");
-		}())
+	  id([&]() {
+		  if (const auto strings = a_src.find("string"); strings != a_src.end())
+			  if (const auto name = strings->find("name"); name != strings->end())
+				  return name->get<std::string>();
+		  throw std::runtime_error("Missing Name field");
+	  }())
 	{
 		const auto floats = a_src.find("floatList");
 		if (floats == a_src.end())
@@ -70,7 +70,7 @@ namespace Registry
 	}
 
 	Expression::Expression(DefaultExpression a_default) :
-		id(magic_enum::enum_name(a_default)), version(1), scaling(Scaling::Linear)
+	  id(magic_enum::enum_name(a_default)), version(1), scaling(Scaling::Linear)
 	{
 		switch (a_default) {
 		case DefaultExpression::Afraid:
@@ -253,7 +253,7 @@ namespace Registry
 	{
 		has_edits = true;
 		auto& dataEntry = data[a_female];
-		while (dataEntry.size() <= a_level) {
+		while (dataEntry.size() <= static_cast<size_t>(a_level)) {
 			dataEntry.emplace_back();
 		}
 		std::copy_n(a_values.begin(), dataEntry[a_level].size(), dataEntry[a_level].begin());
@@ -277,4 +277,4 @@ namespace Registry
 		enabled = a_enabled;
 	}
 
-}	 // namespace Registry
+}  // namespace Registry

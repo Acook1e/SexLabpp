@@ -9,7 +9,7 @@ namespace Thread
 	{
 		constexpr static const char* CENTER_REF_NAME{ "CenterAlias" };
 
-	public:
+	  public:
 		enum class FurniturePreference
 		{
 			Disallow = 0,
@@ -29,7 +29,7 @@ namespace Thread
 		using FurnitureMapping = std::vector<std::pair<RE::TESObjectREFR*, Registry::FurnitureOffset>>;
 		using SceneMapping = std::array<std::vector<const Registry::Scene*>, SceneType::Total>;
 
-	public:
+	  public:
 		struct Position
 		{
 			Position(RE::BGSRefAlias* alias, RE::Actor* actor, bool submissive, bool dominant);
@@ -45,7 +45,7 @@ namespace Thread
 		struct Center
 		{
 			Center(RE::BGSRefAlias* alias) :
-				alias(alias) {}
+			  alias(alias) {}
 			~Center() = default;
 
 			void SetReference(RE::TESObjectREFR* a_ref, Registry::FurnitureOffset a_offset);
@@ -56,7 +56,7 @@ namespace Thread
 			const Registry::FurnitureDetails* details{ nullptr };
 		};
 
-	public:
+	  public:
 		Instance(RE::TESQuest* a_linkedQst, const std::vector<RE::Actor*>& a_submissives, const SceneMapping& a_scenes, FurniturePreference a_furniturePreference);
 		~Instance() = default;
 
@@ -64,7 +64,7 @@ namespace Thread
 		static void DestroyInstance(RE::TESQuest* a_linkedQst);
 		static Instance* GetInstance(RE::TESQuest* a_linkedQst);
 
-	public:
+	  public:
 		bool HasNiInstance() const { return niInstance != nullptr; }
 		NiNode::NiInstance* GetNiInstance() { return niInstance.get(); }
 		void UnregisterNiInstance() { (NiNode::NiUpdate::Unregister(linkedQst->GetFormID()), niInstance = nullptr); }
@@ -105,7 +105,7 @@ namespace Thread
 		int32_t GetCurrentPermutation(RE::Actor* a_position);
 		void SetNextPermutation(RE::Actor* a_position);
 
-	private:
+	  private:
 		RE::TESQuest* linkedQst;
 		std::shared_ptr<NiNode::NiInstance> niInstance{ nullptr };
 
@@ -118,7 +118,7 @@ namespace Thread
 		const Registry::Stage* activeStage{ nullptr };
 		SceneMapping scenes{};
 
-	private:
+	  private:
 		enum class CenterSelection
 		{
 			Actor,
@@ -134,9 +134,9 @@ namespace Thread
 		FurnitureMapping::value_type SelectCenterRefMenu(const FurnitureMapping& a_furnitures, RE::Actor* a_tmpCenter);
 		FurnitureMapping GetUniqueFurnituesOfTypeInBound(RE::Actor* a_centerAct, REX::EnumSet<Registry::FurnitureType::Value> a_furnitureTypes);
 
-	private:
-		static inline std::shared_mutex _mInstances{};
-		static inline std::vector<std::unique_ptr<Instance>> instances{};
+	  private:
+		static std::shared_mutex _mInstances;
+		static std::vector<std::unique_ptr<Instance>> instances;
 	};
 
-}	 // namespace Thread
+}  // namespace Thread

@@ -7,20 +7,20 @@
 namespace Thread::Interface
 {
 	SceneMenu::SceneMenu() :
-		RE::IMenu()
+	  RE::IMenu()
 	{
 		this->inputContext = Context::kNone;
 		this->depthPriority = DEPTH_PRIORITY;
 		this->menuFlags.set(
-			Flag::kAlwaysOpen,
-			Flag::kCustomRendering,
-			Flag::kAssignCursorToRenderer);
+		  Flag::kAlwaysOpen,
+		  Flag::kCustomRendering,
+		  Flag::kAssignCursorToRenderer);
 
 		auto scaleform = RE::BSScaleformManager::GetSingleton();
 		[[maybe_unused]] bool success = scaleform->LoadMovieEx(this, FILEPATH, [](RE::GFxMovieDef* a_def) -> void {
 			a_def->SetState(
-				RE::GFxState::StateType::kLog,
-				RE::make_gptr<FlashLogger<SceneMenu>>().get());
+			  RE::GFxState::StateType::kLog,
+			  RE::make_gptr<FlashLogger<SceneMenu>>().get());
 		});
 		assert(success);
 
@@ -253,7 +253,7 @@ namespace Thread::Interface
 		auto enumName = magic_enum::enum_name(navType);
 		if (enumName.empty())
 			return EventResult::kContinue;
-		SKSE::GetTaskInterface()->AddUITask([=]() {
+		SKSE::GetTaskInterface()->AddUITask([=, this]() {
 			std::string navEq{ enumName };
 			Util::ToLower(navEq);
 			std::vector<RE::GFxValue> args{
@@ -464,9 +464,9 @@ namespace Thread::Interface
 		assert(a_args.argCount == 1 && a_args.args[0].GetType() == RE::GFxValue::ValueType::kBoolean);
 		const bool visible = a_args.args[0].GetBool();
 		RE::UIMessageQueue::GetSingleton()->AddMessage(
-			RE::HUDMenu::MENU_NAME,
-			visible ? RE::UI_MESSAGE_TYPE::kShow : RE::UI_MESSAGE_TYPE::kHide,
-			nullptr);
+		  RE::HUDMenu::MENU_NAME,
+		  visible ? RE::UI_MESSAGE_TYPE::kShow : RE::UI_MESSAGE_TYPE::kHide,
+		  nullptr);
 	}
 
 	void SceneMenu::SLAPI_GetHideHUD::Call(Params& a_args)

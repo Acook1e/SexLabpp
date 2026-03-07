@@ -57,10 +57,10 @@ namespace stl
 	constexpr std::uint32_t version_pack(REL::Version a_version) noexcept
 	{
 		return static_cast<std::uint32_t>(
-			(a_version[0] & 0x0FF) << 24u |
-			(a_version[1] & 0x0FF) << 16u |
-			(a_version[2] & 0xFFF) << 4u |
-			(a_version[3] & 0x00F) << 0u);
+		  (a_version[0] & 0x0FF) << 24u |
+		  (a_version[1] & 0x0FF) << 16u |
+		  (a_version[2] & 0xFFF) << 4u |
+		  (a_version[3] & 0x00F) << 0u);
 	}
 
 	template <class T>
@@ -157,7 +157,7 @@ namespace Registry
 	template <typename E>
 	constexpr size_t CountFlagSize()
 	{
-		auto max = static_cast<size_t>(E::Total) - 1, ret = 0;
+		size_t max = static_cast<size_t>(E::Total) - 1, ret = 0;
 		while ((1 << ret++) < max) {}
 		return ret;
 	}

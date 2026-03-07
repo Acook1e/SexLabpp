@@ -8,8 +8,7 @@ namespace Papyrus::ActorLibrary
 {
 	int32_t ValidateActorImpl(VM* a_vm, StackID a_stackID, RE::StaticFunctionTag*, RE::Actor* a_actor)
 	{
-		if (!a_actor)
-		{
+		if (!a_actor) {
 			a_vm->TraceStack("Cannot validate a none reference", a_stackID);
 			return -1;
 		}
@@ -84,7 +83,7 @@ namespace Papyrus::ActorLibrary
 			}
 			const auto& biped = form->As<RE::BGSBipedObjectForm>();
 			if (biped) {
-				const auto& slots = static_cast<uint32_t>(biped->GetSlotMask());
+				const auto& slots = static_cast<uint32_t>(biped->GetSlotMask().underlying());
 				if (slots & a_slotmask) {
 					strip();
 					continue;
@@ -135,4 +134,4 @@ namespace Papyrus::ActorLibrary
 		return count;
 	}
 
-}	 // namespace Papyrus::ActorLibrary
+}  // namespace Papyrus::ActorLibrary

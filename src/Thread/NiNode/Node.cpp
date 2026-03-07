@@ -59,7 +59,6 @@ namespace Thread::NiNode::Node
 			schlongs.push_back(ptr);
 		}
 		if (a_forceSchlong && schlongs.empty()) {
-
 		}
 	}
 
@@ -105,7 +104,7 @@ namespace Thread::NiNode::Node
 
 	NiMath::Segment NodeData::FakeSchlong::GetReferenceSegment() const
 	{
-		return{ ApproximateBase(), ApproximateTip() };
+		return { ApproximateBase(), ApproximateTip() };
 	}
 
 	RE::NiPointer<RE::NiNode> NodeData::FakeSchlong::GetBaseReferenceNode() const
@@ -147,8 +146,8 @@ namespace Thread::NiNode::Node
 	}
 
 	NodeData::SchlongData::SchlongData(RE::NiPointer<RE::NiNode> a_basenode, const glm::mat3& a_rot) :
-		rot({ a_rot[0].x, a_rot[0].y, a_rot[0].z }, { a_rot[1].x, a_rot[1].y, a_rot[1].z }, { a_rot[2].x, a_rot[2].y, a_rot[2].z }),
-		nodes({ a_basenode })
+	  nodes({ a_basenode }),
+	  rot({ a_rot[0].x, a_rot[0].y, a_rot[0].z }, { a_rot[1].x, a_rot[1].y, a_rot[1].z }, { a_rot[2].x, a_rot[2].y, a_rot[2].z })
 	{
 		assert(a_basenode);
 		do {

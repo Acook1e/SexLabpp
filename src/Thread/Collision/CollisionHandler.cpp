@@ -54,18 +54,12 @@ namespace Thread::Collision
 
 		constexpr void ZeroVector4(RE::hkVector4& a_vec)
 		{
-			a_vec.quad.m128_f32[0] = 0.0f;
-			a_vec.quad.m128_f32[1] = 0.0f;
-			a_vec.quad.m128_f32[2] = 0.0f;
-			a_vec.quad.m128_f32[3] = 0.0f;
+			a_vec.quad = _mm_setzero_ps();
 		}
 
 		constexpr void SetUnitZVector4(RE::hkVector4& a_vec)
 		{
-			a_vec.quad.m128_f32[0] = 0.0f;
-			a_vec.quad.m128_f32[1] = 0.0f;
-			a_vec.quad.m128_f32[2] = 1.0f;
-			a_vec.quad.m128_f32[3] = 0.0f;
+			a_vec.quad = _mm_setr_ps(0.0f, 0.0f, 1.0f, 0.0f);
 		}
 
 		struct hkbFootIkDriver : RE::hkReferencedObject
@@ -164,7 +158,9 @@ namespace Thread::Collision
 		  reinterpret_cast<std::uintptr_t>(&rigidBodyController->charRigidBody) + 0x10);
 
 		if (hkCharRB && hkCharRB->character && hkCharRB->character->GetCollidableRW()) {
-			hkCharRB->character->motion.SetMassInv(0.0f);
+			// Mass index is 3
+			float* mass = reinterpret_cast<float*>(&hkCharRB->character->motion.inertiaAndMassInv.quad) + 3 * sizeof(float);
+			*mass = 0.0f;
 			hkCharRB->character->motion.gravityFactor = 0.0f;
 		}
 	}
@@ -195,7 +191,9 @@ namespace Thread::Collision
 		  reinterpret_cast<std::uintptr_t>(&rigidBodyController->charRigidBody) + 0x10);
 
 		if (hkCharRB && hkCharRB->character && hkCharRB->character->GetCollidableRW()) {
-			hkCharRB->character->motion.SetMassInv(1.0f);
+			// Mass index is 3
+			float* mass = reinterpret_cast<float*>(&hkCharRB->character->motion.inertiaAndMassInv.quad) + 3 * sizeof(float);
+			*mass = 1.0f;
 			hkCharRB->character->motion.gravityFactor = 1.0f;
 		}
 	}

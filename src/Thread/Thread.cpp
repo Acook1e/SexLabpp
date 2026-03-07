@@ -7,6 +7,9 @@
 
 namespace Thread
 {
+	std::shared_mutex Instance::_mInstances{};
+	std::vector<std::unique_ptr<Instance>> Instance::instances{};
+
 	bool Instance::CreateInstance(RE::TESQuest* a_linkedQst, const std::vector<RE::Actor*> a_submissives, const SceneMapping& a_scenes, FurniturePreference a_furniturePreference)
 	{
 		if (GetInstance(a_linkedQst)) {
@@ -15,7 +18,7 @@ namespace Thread
 		}
 		try {
 			auto instance = std::make_unique<Instance>(a_linkedQst, a_submissives, a_scenes, a_furniturePreference);
-			std::unique_lock lock{_mInstances};
+			std::unique_lock lock{ _mInstances };
 			instances.emplace_back(std::move(instance));
 			return true;
 		} catch (const std::exception& e) {
@@ -26,13 +29,13 @@ namespace Thread
 
 	void Instance::DestroyInstance(RE::TESQuest* a_linkedQst)
 	{
-		std::unique_lock lock{_mInstances};
+		std::unique_lock lock{ _mInstances };
 		std::erase_if(instances, [&](const auto& instance) { return instance->linkedQst == a_linkedQst; });
 	}
 
 	Instance* Instance::GetInstance(RE::TESQuest* a_linkedQst)
 	{
-		std::shared_lock lock{_mInstances};
+		std::shared_lock lock{ _mInstances };
 		for (auto&& instance : instances) {
 			if (instance->linkedQst == a_linkedQst) {
 				return instance.get();
@@ -418,7 +421,7 @@ namespace Thread
 				return;
 			} else if (!seenPermutations.contains(idx)) {
 				seenPermutations.insert(idx);
-				if (seenPermutations.size() == targetPermutation) {
+				if (seenPermutations.size() == static_cast<size_t>(targetPermutation)) {
 					activeAssignment = it;
 					AdvanceScene(activeStage);
 					logger::info("Actor {} changed to permutation {}.", a_actor->GetFormID(), targetPermutation);
@@ -429,4 +432,4 @@ namespace Thread
 		logger::warn("Actor {} has no alternative permutations.", a_actor->GetFormID());
 	}
 
-}	 // namespace Thread
+}  // namespace Thread
