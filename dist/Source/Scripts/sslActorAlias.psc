@@ -72,11 +72,6 @@ Function ModEnjoymentMult(float afSet, bool bAdjust)
 	EndIf
 EndFunction
 
-; for compatibility with SLSO-based mods
-int Function GetFullEnjoyment()
-	return _FullEnjoyment
-EndFunction
-
 ; ------------------------------------------------------- ;
 ; --- Interactions Info                               --- ;
 ; ------------------------------------------------------- ;
@@ -1631,6 +1626,21 @@ EndFunction
 function SetEndAnimationEvent(string EventName)
 endFunction
 function SetStartAnimationEvent(string EventName, float PlayTime)
+endFunction
+
+int function GetPain()
+	if (_FullEnjoyment < 0)
+		return Math.Abs(_FullEnjoyment) as int
+	endIf
+	return 0	
+endFunction
+
+; for compatibility with SLSO-based mods
+int function GetFullEnjoyment()
+	return _FullEnjoyment
+endFunction
+function BonusEnjoyment(Actor akActor = none, int AdjustBy = 0)
+	return _Thread.AdjustEnjoyment(akActor, AdjustBy)
 endFunction
 
 function OrgasmEffect()

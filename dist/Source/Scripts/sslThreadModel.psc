@@ -3058,6 +3058,14 @@ Function SetBedding(int flag = 0)
 	SetBedFlag(flag)
 EndFunction
 
+int Function GetPain(Actor ActorRef)
+	sslActorAlias ref = ActorAlias(ActorRef)
+	If (!ref)
+		return 0
+	EndIf
+	return ref.GetPain()
+EndFunction
+
 bool property DisableOrgasms hidden
 	bool Function Get()
 		bool ret = false
