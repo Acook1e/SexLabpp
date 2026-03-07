@@ -15,6 +15,7 @@ add_moduledirs("xmake/modules")
 set_project(PROJECT_NAME)
 set_version(PROJECT_VERSION)
 set_languages("cxx23")
+set_toolchains("clang-cl")
 set_license("apache-2.0")
 set_warnings("allextra", "error")
 

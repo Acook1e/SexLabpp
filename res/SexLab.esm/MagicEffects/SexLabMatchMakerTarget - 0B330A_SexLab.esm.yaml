@@ -34,7 +34,3 @@ Sounds: []
 Description:
   TargetLanguage: English
   Value: Starts a scene with the player and the actor hit.
-Conditions:
-- MutagenObjectType: ConditionFloat
-  Data:
-    MutagenObjectType: IsChildConditionData

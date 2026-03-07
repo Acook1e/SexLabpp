@@ -24,6 +24,10 @@ meta.ini
 __pycache__/
 .venv
 
+papyrus
+spriggit
+.cache
+
 .env*
 !.env.example
 dist/SexLab.esm

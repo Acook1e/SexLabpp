@@ -36,7 +36,3 @@ Sounds: []
 Description:
   TargetLanguage: English
   Value: Adds the hit actor to an array for a future scene. Scene starts automatically after 10 seconds or five actors added.
-Conditions:
-- MutagenObjectType: ConditionFloat
-  Data:
-    MutagenObjectType: IsChildConditionData

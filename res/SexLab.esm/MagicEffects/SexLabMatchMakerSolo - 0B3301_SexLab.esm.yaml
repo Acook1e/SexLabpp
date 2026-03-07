@@ -32,7 +32,3 @@ Sounds: []
 Description:
   TargetLanguage: English
   Value: Starts a scene with just the player.
-Conditions:
-- MutagenObjectType: ConditionFloat
-  Data:
-    MutagenObjectType: IsChildConditionData

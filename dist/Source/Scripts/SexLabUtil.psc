@@ -84,6 +84,7 @@ function PrintConsole(string output) global native
 Actor[] function MakeActorArray(Actor Actor1 = none, Actor Actor2 = none, Actor Actor3 = none, Actor Actor4 = none, Actor Actor5 = none) global native
 float function GetCurrentGameRealTime() global native
 bool Function IsGodModeEnabled() global native
+bool Function IsChild(Actor actor = none) global native
 
 String[] Function MergeSplitTags(String asTags, String asTagsSuppress, bool abRequireAll) global
   String[] ret1 = PapyrusUtil.ClearEmpty(PapyrusUtil.StringSplit(asTags, ","))
