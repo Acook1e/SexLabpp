@@ -1692,7 +1692,7 @@ bool[] Function ListDetectedInteractionsInternal(Actor akPosition, Actor akPartn
 		return ListDetectedPhysicsInteractionsInternal(akPosition, akPartner)
 	EndIf
 	;COMEBACK: Re-assess the need for the fallback with new typing update
-	If (Config.FallbackToTagsForDetection && HasSceneTag("RimTagged"))
+	If (Config.FallbackToTagsForDetection && HasSceneTag("PosTagged"))
 		return ListDetectedPosTagsInteractionsInternal(akPosition)
     EndIf
 	;If all else fails, returns pAnal, which has the highest enj factor
@@ -2095,9 +2095,9 @@ bool[] Function CheckSpecificStageTags(string asScene, string asStage)
 	ret[7] = SexLabRegistry.IsStageTag(asScene, asStage, "Standing")
 	ret[8] = SexLabRegistry.IsStageTag(asScene, asStage, "Forced")
 	ret[9] = SexLabRegistry.IsStageTag(asScene, asStage, "Unconscious")
-	ret[10] = SexLabRegistry.IsStageTag(asScene, asStage, "RimTagged")
-	ret[11] = SexLabRegistry.IsStageTag(asScene, asStage, "RimFast")
-	ret[12] = SexLabRegistry.IsStageTag(asScene, asStage, "RimSlow")
+	ret[10] = SexLabRegistry.IsStageTag(asScene, asStage, "PosTagged")
+	ret[11] = SexLabRegistry.IsStageTag(asScene, asStage, "PosFast")
+	ret[12] = SexLabRegistry.IsStageTag(asScene, asStage, "PosSlow")
 	return ret
 EndFunction
 
